@@ -1,5 +1,21 @@
+# ====================
+# Frontend (Streamlit)
+# ====================
 streamlit
 pandas
 altair
 plotly
 openpyxl
+requests
+
+# ====================
+# Backend (FastAPI)
+# ====================
+fastapi
+uvicorn
+
+# ====================
+# Shared utilities
+# ====================
+python-dateutil
+python-multipart

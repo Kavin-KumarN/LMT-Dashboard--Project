@@ -23,9 +23,10 @@ def validate_axes(df, x, y):
         return False
     return True
 
+
 def get_label_angle(series, threshold=10):
     """
-    Decide X-axis label angle based on max label length
+    Tilt labels only if values are long
     """
     try:
         max_len = series.astype(str).map(len).max()
@@ -68,7 +69,7 @@ def build_altair_chart(df, x, y, chart_type):
 
 
 # -------------------------------------------------
-# CHART SECTION (RADIO-BASED, PIE-AWARE)
+# CHART SECTION
 # -------------------------------------------------
 def chart_section(df):
     st.subheader("📊 Charts")
@@ -91,7 +92,7 @@ def chart_section(df):
         horizontal=True
     )
 
-    # -------- AXIS CONTROLS --------
+    # -------- Axis Controls --------
     if chart_type == "Pie":
         categorical_cols = [c for c in all_cols if c not in numeric_cols]
 
@@ -105,6 +106,15 @@ def chart_section(df):
             key="pie_category"
         )
 
+        fig = px.pie(df, names=category)
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.download_button(
+            "⬇ Download Pie Chart (PNG)",
+            fig.to_image(format="png"),
+            file_name="pie_chart.png"
+        )
+
     else:
         col1, col2 = st.columns(2)
 
@@ -115,15 +125,12 @@ def chart_section(df):
             y_options = [c for c in numeric_cols if c != x]
             y = st.selectbox("Y-axis", y_options, key="y_axis")
 
-    # -------- STABLE CHART CONTAINER --------
-    chart_container = st.container()
+        if validate_axes(df, x, y):
+            chart = build_altair_chart(df, x, y, chart_type)
+            st.altair_chart(chart, use_container_width=True)
 
-    with chart_container:
-        if chart_type == "Pie":
-            fig = px.pie(df, names=category)
-            st.plotly_chart(fig, use_container_width=True)
-
-        else:
-            if validate_axes(df, x, y):
-                chart = build_altair_chart(df, x, y, chart_type)
-                st.altair_chart(chart, use_container_width=True)
+            st.download_button(
+                "⬇ Download Chart (Vega JSON)",
+                chart.to_json(),
+                file_name=f"{chart_type.lower()}_chart.json"
+            )
