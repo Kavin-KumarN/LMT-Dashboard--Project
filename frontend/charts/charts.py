@@ -128,9 +128,3 @@ def chart_section(df):
         if validate_axes(df, x, y):
             chart = build_altair_chart(df, x, y, chart_type)
             st.altair_chart(chart, use_container_width=True)
-
-            st.download_button(
-                "⬇ Download Chart (Vega JSON)",
-                chart.to_json(),
-                file_name=f"{chart_type.lower()}_chart.json"
-            )
